@@ -1,0 +1,126 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>AZ Kvíz</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+
+  <div>
+    <img id="logo" src="img/logo-nobg.png">
+  </div>
+
+  <div id="question-choose-wrapper">
+    <form id="question-choose-form">
+      <p>Soubor s otázkami:</p>
+      <input type="file" name="questions" id="questions-choose" accept="text/plain">
+      <p>Soubor s náhradními otázkami:</p>
+      <input type="file" name="compensatory-questions" id="compensatory-questions-choose" accept="text/plain">
+    </form>
+  </div>
+
+  <div id="quiz-wrapper" >
+    <div style="" class="pyramid">
+      <div class="hex-row no1">
+        <div class="hex"><div class="top"></div><div class="middle">1</div><div class="bottom"></div></div>
+      </div>
+      <div class="hex-row no2">
+        <div class="hex"><div class="top"></div><div class="middle">2</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">3</div><div class="bottom"></div></div>
+      </div>
+      <div class="hex-row no3">
+        <div class="hex"><div class="top"></div><div class="middle">4</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">5</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">6</div><div class="bottom"></div></div>
+      </div>
+      <div class="hex-row no4">
+        <div class="hex"><div class="top"></div><div class="middle">7</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">8</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">9</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">10</div><div class="bottom"></div></div>
+      </div>
+      <div class="hex-row no5">
+        <div class="hex"><div class="top"></div><div class="middle">11</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">12</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">13</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">14</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">15</div><div class="bottom"></div></div>
+      </div>
+      <div class="hex-row no6">
+        <div class="hex"><div class="top"></div><div class="middle">16</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">17</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">18</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">19</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">20</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">21</div><div class="bottom"></div></div>
+      </div>
+      <div class="hex-row">
+        <div class="hex"><div class="top"></div><div class="middle">22</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">23</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">24</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">25</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">26</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">27</div><div class="bottom"></div></div>
+        <div class="hex"><div class="top"></div><div class="middle">28</div><div class="bottom"></div></div>
+      </div>
+    </div>
+
+    <div id="turn-info">
+      Začít hru
+    </div>
+  </div>
+
+
+  <div id="question-wrapper">
+    <div id="question-title">
+      Sport na obrázku
+    </div>
+
+    <div id="question-image-container">
+      <img id="question-image" src="">
+      <span id="image-answer"></span>
+    </div>
+
+    <div id="text-question-container">
+      <div id="text-question"></div>
+      <div id="text-answer">Ukázat odpověď</div>
+    </div>
+
+
+    <div id="button-group">
+      <button id="correct" class="button">Správně</button>
+      <button id="opponent-correct" class="button button-red">Soupeř správně</button>
+      <button id="wrong" class="button button-black">Špatně</button>
+    </div>
+  </div>
+
+
+  <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="js/questions-prepare.js"></script>
+  <script type="text/javascript" src="js/bootstrap-filestyle.min.js"> </script>
+
+</body>
+
+</html>
