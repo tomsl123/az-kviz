@@ -187,16 +187,21 @@ let compensatoryQuestions = [
   }
 ]
 
-let welcomeTheme = new Audio('az-kviz-znelka.mp3');
+const welcomeTheme = new Audio('az-kviz-znelka.mp3');
+const timerStandard = new Audio('timer-normal.mp3');
+const timerCompensatory = new Audio('timer-short.mp3');
 
 $(function (){
-  console.log('js loaded');
   welcomeTheme.load();
+  timerStandard.load();
+  timerCompensatory.load();
 
   // init parts - hide not needed ones before init
   $('#question-wrapper').hide();
   $('.hex').hide();
   $('#logo').hide();
+  $('#timer-control').hide();
+  $('#timer').hide();
 
   $('#turn-info').click(fillQuestionArrays);
 });
@@ -222,6 +227,9 @@ function initGame() {
 
     let originalColor;
     $('.middle').hover(function () {
+      let sound = new Audio('click.mp3');
+      sound.load();
+      sound.play();
       originalColor = $(this).css('background-color')
       $(this).css('background-color', '#b8bab4')
       $(this).parent().find('.bottom').css('border-top-color', '#b8bab4')
@@ -253,12 +261,10 @@ function hexClicked() {
   if(demoMode) {
     return;
   }
-  if(questions.length === 0 || compensatoryQuestions.length === 0){
+  if((questions.length === 0 && !$(this).hasClass('wrong')) || (compensatoryQuestions.length === 0 && $(this).hasClass('wrong'))){
     alert('Došly otázky');
     return;
   }
-
-  console.log('hex clicked');
   questionHex = $(this);
 
   $(this).off('mouseenter mouseleave');
@@ -267,23 +273,36 @@ function hexClicked() {
   $('#quiz-wrapper').hide();
 
   resetQuestion();
+  resetTimer();
 
   if($(this).hasClass('wrong')) {
+    TIME_LIMIT = 10;
+    WARNING_THRESHOLD = 5;
+    standardQuestion = false;
     prepareCompensatoryQuestion()
   }
   else {
+    TIME_LIMIT = 15;
+    WARNING_THRESHOLD = 7;
+    standardQuestion = true;
     prepareQuestion();
   }
 
   $('#question-wrapper').show();
+  $('#timer-control').show();
+  $('#timer').show();
 }
 
 function questionCorrect() {
+
+  let sound = new Audio('correct.mp3');
+  sound.load();
+
   let top = $(questionElem).parent().children()[0];
   $(top).css('border-bottom-color', teamOnTurn);
 
   let middle = $(questionElem).parent().children()[1];
-  $(middle).css('background-color', teamOnTurn);
+  $(middle).css('background-color', teamOnTurn).addClass(teamOnTurn);
 
   let bottom = $(questionElem).parent().children()[2];
   $(bottom).css('border-top-color', teamOnTurn);
@@ -293,10 +312,19 @@ function questionCorrect() {
   $(questionElem).css('cursor', 'default');
 
   $('#question-wrapper').hide();
+  $('#timer-control').hide();
+  $('#timer').hide();
   $('#quiz-wrapper').show();
+  if(!checkWin()){
+    sound.play();
+  }
 }
 
 function questionOpponentCorrect() {
+
+  let sound = new Audio('correct.mp3');
+  sound.load();
+
   let hexColor = teamOnTurn === 'blue' ? 'orange' : 'blue';
 
   let top = $(questionElem).parent().children()[0];
@@ -304,6 +332,7 @@ function questionOpponentCorrect() {
 
   let middle = $(questionElem).parent().children()[1];
   $(middle).css('background-color', hexColor);
+  $(middle).addClass(hexColor);
 
   let bottom = $(questionElem).parent().children()[2];
   $(bottom).css('border-top-color', hexColor);
@@ -312,7 +341,12 @@ function questionOpponentCorrect() {
   $(questionElem).css('cursor', 'default');
 
   $('#question-wrapper').hide();
+  $('#timer-control').hide();
+  $('#timer').hide();
   $('#quiz-wrapper').show();
+  if(!checkWin()){
+    sound.play();
+  }
 }
 
 function changeTurn() {
@@ -332,6 +366,11 @@ function changeTurn() {
 }
 
 function questionWrong() {
+
+  let sound = new Audio('wrong.mp3');
+  sound.load();
+  sound.play();
+
   let top = $(questionElem).parent().children()[0];
   $(top).css('border-bottom-color', 'black');
 
@@ -346,7 +385,10 @@ function questionWrong() {
   changeTurn();
 
   $('#question-wrapper').hide();
+  $('#timer-control').hide();
+  $('#timer').hide();
   $('#quiz-wrapper').show();
+  checkWin()
 }
 
 function prepareQuestion() {
@@ -402,9 +444,59 @@ function resetQuestion() {
   $('#opponent-correct').show()
 }
 
+function checkWin() {
+  let orangeNumbers = [];
+  let blueNumbers = [];
+  let otherNumbers = [];
+  let side1Numbers = [1,2,4,7,11,16,22];
+  let side2Numbers = [1,3,6,10,15,21,28];
+  let side3Numbers = [22,23,24,25,26,27,28];
+
+  for(let hex of $('.middle').toArray()) {
+    if($(hex).hasClass('blue')) {
+      blueNumbers.push(parseInt($(hex).text()))
+    }
+    else if($(hex).hasClass('orange')){
+      orangeNumbers.push(parseInt($(hex).text()))
+    }
+    else {
+      otherNumbers.push(parseInt($(hex).text()))
+    }
+  }
+  if(orangeNumbers.some(r=> side1Numbers.includes(r)) && orangeNumbers.some(r=> side2Numbers.includes(r)) && orangeNumbers.some(r=> side3Numbers.includes(r))){
+    $('.middle').each(function() {
+      if(!$(this).hasClass('orange')) {
+        $(this).parent().animate({opacity: 0.2}, 1000);
+        $(this).off('click').off('mouseenter mouseleave');
+        $(this).css('cursor', 'default');
+        $('#turn-info').hide()
+      }
+    });
+    let winAudio = new Audio('win.mp3');
+    winAudio.load();
+    winAudio.play();
+    return true;
+  }
+  else if(blueNumbers.some(r=> side1Numbers.includes(r)) && blueNumbers.some(r=> side2Numbers.includes(r)) && blueNumbers.some(r=> side3Numbers.includes(r))){
+    $('.middle').each(function() {
+      if(!$(this).hasClass('blue')) {
+        $(this).parent().animate({opacity: 0.2}, 1000);
+        $(this).off('click').off('mouseenter mouseleave');
+        $(this).css('cursor', 'default');
+        $('#turn-info').hide()
+      }
+    });
+    let winAudio = new Audio('win.mp3');
+    winAudio.load();
+    winAudio.play();
+    return true;
+  }
+  return false
+}
 
 /**
  * Delay for a number of milliseconds
+ * TODO: overit pouziti a oddelat
  */
 function sleep(delay) {
   var start = new Date().getTime();

@@ -10,13 +10,13 @@ function fillQuestionArrays() {
 
   let fr1 = new FileReader();
   let fr2 = new FileReader();
-  fr1.readAsBinaryString(questionFile);
+  fr1.readAsText(questionFile, 'UTF-8');
 
   fr1.onload = function () {
     let result = prepareQuestionObjectArray(fr1.result);
 
     if(result !== false){
-      fr2.readAsBinaryString(compensatoryQuestionFile);
+      fr2.readAsText(compensatoryQuestionFile, 'UTF-8');
       questions = result;
     }
     else {
@@ -81,6 +81,7 @@ function prepareQuestionObjectArray(fileContent) {
       resultQuestionObject.question = undefined;
     }
     else {
+      console.log(fileRow);
       return false
     }
 
@@ -91,7 +92,7 @@ function prepareQuestionObjectArray(fileContent) {
 }
 
 function formatFileStringInArray(fileString) {
-  let fileContentArr = fileString.split("\n");
+  let fileContentArr = fileString.trim().split("\n");
 
   for (let i = 0; i < fileContentArr.length; i++) {
     fileContentArr[i] = fileContentArr[i].trim();
@@ -107,6 +108,8 @@ function formatFileStringInArray(fileString) {
       fileContentArr.splice(i, 0, "");
     }
   }
+  //TODO: Tohle je hotfix zasadni chyby v logice, vyresit
+  fileContentArr.push('');
   return fileContentArr;
 }
 
