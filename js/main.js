@@ -444,13 +444,21 @@ function resetQuestion() {
   $('#opponent-correct').show()
 }
 
+let side1Connected = false;
+let side2Connected = false;
+let side3Connected = false;
+let checkingNumbers = [];
+let side1Numbers = [1,2,4,7,11,16,22];
+let side2Numbers = [1,3,6,10,15,21,28];
+let side3Numbers = [22,23,24,25,26,27,28];
+
 function checkWin() {
+  side1Connected = false;
+  side2Connected = false;
+  side3Connected = false;
   let orangeNumbers = [];
   let blueNumbers = [];
   let otherNumbers = [];
-  let side1Numbers = [1,2,4,7,11,16,22];
-  let side2Numbers = [1,3,6,10,15,21,28];
-  let side3Numbers = [22,23,24,25,26,27,28];
 
   for(let hex of $('.middle').toArray()) {
     if($(hex).hasClass('blue')) {
@@ -463,42 +471,83 @@ function checkWin() {
       otherNumbers.push(parseInt($(hex).text()))
     }
   }
-  if(orangeNumbers.some(r=> side1Numbers.includes(r)) && orangeNumbers.some(r=> side2Numbers.includes(r)) && orangeNumbers.some(r=> side3Numbers.includes(r))){
-    $('.middle').each(function() {
-      if(!$(this).hasClass('orange')) {
-        $(this).parent().animate({opacity: 0.2}, 1000);
-        $(this).off('click').off('mouseenter mouseleave');
-        $(this).css('cursor', 'default');
-        $('#turn-info').hide()
-      }
-    });
-    let winAudio = new Audio('win.mp3');
-    winAudio.load();
-    winAudio.play();
-    return true;
+  checkingNumbers = teamOnTurn === 'blue' ? orangeNumbers : blueNumbers;
+
+  findConnectingPieces();
+
+  if(teamOnTurn !== 'blue') {
+    if(side1Connected && side2Connected && side3Connected){
+      $('.middle').each(function() {
+        if(!$(this).hasClass('blue')) {
+          $(this).parent().animate({opacity: 0.2}, 1000);
+          $(this).off('click').off('mouseenter mouseleave');
+          $(this).css('cursor', 'default');
+          $('#turn-info').hide()
+        }
+      });
+      let winAudio = new Audio('win.mp3');
+      winAudio.load();
+      winAudio.play();
+      return true;
+    }
   }
-  else if(blueNumbers.some(r=> side1Numbers.includes(r)) && blueNumbers.some(r=> side2Numbers.includes(r)) && blueNumbers.some(r=> side3Numbers.includes(r))){
-    $('.middle').each(function() {
-      if(!$(this).hasClass('blue')) {
-        $(this).parent().animate({opacity: 0.2}, 1000);
-        $(this).off('click').off('mouseenter mouseleave');
-        $(this).css('cursor', 'default');
-        $('#turn-info').hide()
-      }
-    });
-    let winAudio = new Audio('win.mp3');
-    winAudio.load();
-    winAudio.play();
-    return true;
+  else {
+    if(side1Connected && side2Connected && side3Connected){
+      $('.middle').each(function() {
+        if(!$(this).hasClass('orange')) {
+          $(this).parent().animate({opacity: 0.2}, 1000);
+          $(this).off('click').off('mouseenter mouseleave');
+          $(this).css('cursor', 'default');
+          $('#turn-info').hide()
+        }
+      });
+      let winAudio = new Audio('win.mp3');
+      winAudio.load();
+      winAudio.play();
+      return true;
+    }
   }
   return false
 }
 
-/**
- * Delay for a number of milliseconds
- * TODO: overit pouziti a oddelat
- */
-function sleep(delay) {
-  var start = new Date().getTime();
-  while (new Date().getTime() < start + delay);
+function findConnectingPieces(piece = null) {
+
+  let number = piece !== null ? piece : parseInt($(questionElem).text());
+  console.log(number);
+  if(!checkingNumbers.includes(number)) return;
+
+  checkingNumbers = checkingNumbers.filter(elem => elem !== number);
+
+  if(side1Numbers.includes(number)){
+    side1Connected = true;
+  }
+  if(side2Numbers.includes(number)){
+    side2Connected = true;
+  }
+  if(side3Numbers.includes(number)){
+    side3Connected = true;
+  }
+
+  let connectingToNumber = [];
+  let rowNumber = parseInt($('#'+number).parent().attr('id'));
+  if(!side1Numbers.includes(number)){
+    connectingToNumber.push(number-1);
+    connectingToNumber.push(number-rowNumber);
+  }
+  if(!side2Numbers.includes(number)){
+    connectingToNumber.push(number+1);
+    connectingToNumber.push(number-rowNumber+1);
+  }
+  if(!side3Numbers.includes(number)){
+    connectingToNumber.push(number+rowNumber);
+    connectingToNumber.push(number+rowNumber+1);
+  }
+
+  connectingToNumber = connectingToNumber.filter(elem => checkingNumbers.includes(elem));
+
+  for (let connectingNumber of connectingToNumber) {
+    console.log(connectingNumber);
+    findConnectingPieces(connectingNumber);
+  }
+
 }
